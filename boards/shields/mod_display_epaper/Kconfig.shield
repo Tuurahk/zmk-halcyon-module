@@ -1,0 +1,17 @@
+# Copyright (c) 2026 Splitkb.com
+# SPDX-License-Identifier: MIT
+
+config SHIELD_MOD_DISPLAY_EPAPER
+    bool
+
+config SHIELD_MOD_DISPLAY_EPAPER_FOREST
+    def_bool $(shields_list_contains,mod_display_epaper_forest)
+    select SHIELD_MOD_DISPLAY_EPAPER
+
+config SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN
+    def_bool $(shields_list_contains,mod_display_epaper_mountain)
+    select SHIELD_MOD_DISPLAY_EPAPER
+
+config SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE
+    def_bool $(shields_list_contains,mod_display_epaper_cityscape)
+    select SHIELD_MOD_DISPLAY_EPAPER
