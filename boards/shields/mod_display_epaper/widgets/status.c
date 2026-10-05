@@ -66,6 +66,23 @@ static void draw_top(lv_obj_t *widget, const struct status_state *state) {
     draw_battery_percentage(canvas, state);
     draw_lock_indicators(canvas, state);
 
+    // Draw current layer
+    static const char *const layer_labels[] = {
+        "QWE", "NAV", "SYM", "FUN", "ADJ", "GA1", "GA2",
+    };
+    lv_draw_label_dsc_t layer_label_dsc;
+    init_label_dsc(&layer_label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_14,
+                   LV_TEXT_ALIGN_CENTER);
+
+    const char *layer_label = NULL;
+    if (state->layer_index < ARRAY_SIZE(layer_labels)) {
+        layer_label = layer_labels[state->layer_index];
+    }
+
+    if (layer_label != NULL) {
+        canvas_draw_text(canvas, 0, 42, 86, &layer_label_dsc, layer_label);
+    }
+
     // Draw output status
     char output_text[10] = {};
 
@@ -159,17 +176,6 @@ static void draw_bottom(lv_obj_t *widget, const struct status_state *state) {
 
     // Fill background
     lv_canvas_fill_bg(canvas, LVGL_BACKGROUND, LV_OPA_COVER);
-
-    // Draw layer
-    if (state->layer_label == NULL || strlen(state->layer_label) == 0) {
-        char text[10] = {};
-
-        sprintf(text, "LAYER %i", state->layer_index);
-
-        canvas_draw_text(canvas, 0, 0, 88, &label_dsc, text);
-    } else {
-        canvas_draw_text(canvas, 0, 0, 88, &label_dsc, state->layer_label);
-    }
 
     // Rotate canvas
     rotate_canvas(canvas);
@@ -283,8 +289,7 @@ static void set_layer_status(struct zmk_widget_status *widget, struct layer_stat
     widget->state.layer_index = state.index;
     widget->state.layer_label = state.label;
 
-    draw_middle(widget->obj, &widget->state);
-    draw_bottom(widget->obj, &widget->state);
+    draw_top(widget->obj, &widget->state);
 }
 
 static void layer_status_update_cb(struct layer_status_state state) {
@@ -312,10 +317,6 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_t *middle = lv_canvas_create(widget->obj);
     lv_obj_align(middle, LV_ALIGN_TOP_LEFT, 24, 0);
     lv_canvas_set_buffer(middle, widget->cbuf2, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
-    lv_obj_t *bottom = lv_canvas_create(widget->obj);
-    lv_obj_align(bottom, LV_ALIGN_TOP_LEFT, 44, 0);
-    lv_canvas_set_buffer(bottom, widget->cbuf3, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
-
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();
     widget_hid_indicators_init();
