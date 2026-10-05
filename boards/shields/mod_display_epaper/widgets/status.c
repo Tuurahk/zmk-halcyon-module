@@ -67,21 +67,7 @@ static void draw_top(lv_obj_t *widget, const struct status_state *state) {
     draw_lock_indicators(canvas, state);
 
     // Draw current layer
-    static const char *const layer_labels[] = {
-        "QWE", "NAV", "SYM", "FUN", "ADJ", "GA1", "GA2",
-    };
-    lv_draw_label_dsc_t layer_label_dsc;
-    init_label_dsc(&layer_label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_14,
-                   LV_TEXT_ALIGN_CENTER);
-
-    const char *layer_label = NULL;
-    if (state->layer_index < ARRAY_SIZE(layer_labels)) {
-        layer_label = layer_labels[state->layer_index];
-    }
-
-    if (layer_label != NULL) {
-        canvas_draw_text(canvas, 0, 42, 86, &layer_label_dsc, layer_label);
-    }
+    draw_layer_indicator(canvas, state);
 
     // Draw output status
     char output_text[10] = {};
