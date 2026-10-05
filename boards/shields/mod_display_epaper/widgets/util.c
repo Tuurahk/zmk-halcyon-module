@@ -6,6 +6,8 @@
  */
 
 #include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <dt-bindings/zmk/hid_indicators.h>
 #include "util.h"
 
@@ -82,6 +84,8 @@ void draw_lock_indicators(lv_obj_t *canvas, const struct status_state *state) {
 }
 
 void draw_layer_indicator(lv_obj_t *canvas, const struct status_state *state) {
+    LOG_INF("EPAPER layer redraw: index=%d, label=%s", state->layer_index,
+            state->layer_label ? state->layer_label : "<none>");
     static const char *const layer_labels[] = {
         "QWE", "NAV", "SYM", "FUN", "ADJ", "GA1", "GA2",
     };
