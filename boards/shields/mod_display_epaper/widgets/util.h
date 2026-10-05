@@ -25,6 +25,8 @@ struct status_state {
     uint8_t battery;
     bool charging;
     uint8_t hid_indicators;
+    uint8_t layer_index;
+    const char *layer_label;
 #if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
     struct zmk_endpoint_instance selected_endpoint;
     int active_profile_index;
@@ -32,8 +34,6 @@ struct status_state {
     bool active_profile_bonded;
     bool profiles_connected[NICEVIEW_PROFILE_COUNT];
     bool profiles_bonded[NICEVIEW_PROFILE_COUNT];
-    uint8_t layer_index;
-    const char *layer_label;
     uint8_t wpm[10];
 #else
     bool connected;
