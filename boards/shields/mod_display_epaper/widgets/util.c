@@ -81,6 +81,21 @@ void draw_lock_indicators(lv_obj_t *canvas, const struct status_state *state) {
     }
 }
 
+void draw_layer_indicator(lv_obj_t *canvas, const struct status_state *state) {
+    static const char *const layer_labels[] = {
+        "QWE", "NAV", "SYM", "FUN", "ADJ", "GA1", "GA2",
+    };
+
+    if (state->layer_index >= ARRAY_SIZE(layer_labels)) {
+        return;
+    }
+
+    lv_draw_label_dsc_t label_dsc;
+    init_label_dsc(&label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_14, LV_TEXT_ALIGN_CENTER);
+
+    canvas_draw_text(canvas, 0, 42, 86, &label_dsc, layer_labels[state->layer_index]);
+}
+
 void init_label_dsc(lv_draw_label_dsc_t *label_dsc, lv_color_t color, const lv_font_t *font,
                     lv_text_align_t align) {
     lv_draw_label_dsc_init(label_dsc);
