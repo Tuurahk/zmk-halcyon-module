@@ -51,6 +51,8 @@ struct layer_status_state {
 };
 
 static void draw_top(lv_obj_t *widget, const struct status_state *state) {
+    LOG_INF("EPAPER status.c draw_top: layer=%d, label=%s", state->layer_index,
+            state->layer_label ? state->layer_label : "<none>");
     lv_obj_t *canvas = lv_obj_get_child(widget, 0);
 
     lv_draw_label_dsc_t label_dsc;
@@ -303,6 +305,7 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_layer_status, struct layer_status_state, laye
 ZMK_SUBSCRIPTION(widget_layer_status, zmk_layer_state_changed);
 
 int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
+    LOG_INF("EPAPER status.c widget initialization");
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 184, 88);
     lv_obj_t *top = lv_canvas_create(widget->obj);
