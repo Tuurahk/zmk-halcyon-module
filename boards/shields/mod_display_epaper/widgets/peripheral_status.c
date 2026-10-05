@@ -72,6 +72,7 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
 
 static void set_battery_status(struct zmk_widget_status *widget,
                                struct battery_status_state state) {
+    LOG_INF("EPAPER status.c set_battery_status: level=%d", state.level);
 #if IS_ENABLED(CONFIG_USB_DEVICE_STACK)
     widget->state.charging = state.usb_present;
 #endif /* IS_ENABLED(CONFIG_USB_DEVICE_STACK) */
@@ -102,6 +103,7 @@ ZMK_SUBSCRIPTION(widget_battery_status, zmk_battery_state_changed);
 
 static void set_hid_indicators(struct zmk_widget_status *widget,
                                zmk_hid_indicators_t indicators) {
+    LOG_INF("EPAPER status.c set_hid_indicators: indicators=0x%x", indicators);
     widget->state.hid_indicators = indicators;
     draw_top(widget->obj, widget->cbuf, &widget->state);
 }
@@ -156,6 +158,8 @@ struct layer_status_state {
 };
 
 static void set_layer_status(struct zmk_widget_status *widget, struct layer_status_state state) {
+    LOG_INF("EPAPER status.c set_layer_status: index=%d, label=%s", state.index,
+            state.label ? state.label : "<none>");
     widget->state.layer_index = state.index;
     widget->state.layer_label = state.label;
 
