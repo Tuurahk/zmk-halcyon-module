@@ -20,6 +20,8 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/events/split_peripheral_status_changed.h>
 #include <zmk/usb.h>
 #include <zmk/ble.h>
+#include <zmk/hid_indicators.h>
+#include <zmk/events/hid_indicators_changed.h>
 
 #include "peripheral_status.h"
 
@@ -48,8 +50,10 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     // Fill background
     canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
 
-    // Draw battery
+    // Draw battery and percentage
     draw_battery(canvas, state);
+    draw_battery_percentage(canvas, state);
+    draw_lock_indicators(canvas, state);
 
     // Draw output status
     canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &label_dsc,
@@ -88,6 +92,30 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_battery_status, struct battery_status_state,
                             battery_status_update_cb, battery_status_get_state)
 
 ZMK_SUBSCRIPTION(widget_battery_status, zmk_battery_state_changed);
+
+static void set_hid_indicators(struct zmk_widget_status *widget,
+                               zmk_hid_indicators_t indicators) {
+    widget->state.hid_indicators = indicators;
+    draw_top(widget->obj, &widget->state);
+}
+
+static void hid_indicators_update_cb(zmk_hid_indicators_t indicators) {
+    struct zmk_widget_status *widget;
+    SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) {
+        set_hid_indicators(widget, indicators);
+    }
+}
+
+static zmk_hid_indicators_t hid_indicators_get_state(const zmk_event_t *eh) {
+    const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
+    return (ev != NULL) ? ev->indicators : zmk_hid_indicators_get_current_profile();
+}
+
+ZMK_DISPLAY_WIDGET_LISTENER(widget_hid_indicators, zmk_hid_indicators_t,
+                            hid_indicators_update_cb, hid_indicators_get_state)
+ZMK_SUBSCRIPTION(widget_hid_indicators, zmk_hid_indicators_changed);
+
+
 #if IS_ENABLED(CONFIG_USB_DEVICE_STACK)
 ZMK_SUBSCRIPTION(widget_battery_status, zmk_usb_conn_state_changed);
 #endif /* IS_ENABLED(CONFIG_USB_DEVICE_STACK) */
