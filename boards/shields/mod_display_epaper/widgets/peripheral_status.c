@@ -108,7 +108,7 @@ static void hid_indicators_update_cb(zmk_hid_indicators_t indicators) {
 
 static zmk_hid_indicators_t hid_indicators_get_state(const zmk_event_t *eh) {
     const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
-    return (ev != NULL) ? ev->indicators : zmk_hid_indicators_get_current_profile();
+    return (ev != NULL) ? ev->indicators : 0;
 }
 
 ZMK_DISPLAY_WIDGET_LISTENER(widget_hid_indicators, zmk_hid_indicators_t,
