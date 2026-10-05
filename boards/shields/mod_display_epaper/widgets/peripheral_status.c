@@ -197,16 +197,16 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     sys_slist_append(&widgets, &widget->node);
     LOG_INF("EPAPER peripheral_status.c widget_battery_status initialization");
     widget_battery_status_init();
-    LOG_INF("EPAPER peripheral_status.c widget_battery_status done.")
+    LOG_INF("EPAPER peripheral_status.c widget_battery_status done.");
     LOG_INF("EPAPER peripheral_status.c widget_hid_indicators initialization");
     widget_hid_indicators_init();
-    LOG_INF("EPAPER peripheral_status.c widget_hid_indicators done.")
+    LOG_INF("EPAPER peripheral_status.c widget_hid_indicators done.");
     LOG_INF("EPAPER peripheral_status.c widget_peripheral_status initialization");
     widget_peripheral_status_init();
-    LOG_INF("EPAPER peripheral_status.c widget_peripheral_status done.")
+    LOG_INF("EPAPER peripheral_status.c widget_peripheral_status done.");
     LOG_INF("EPAPER peripheral_status.c widget_layer_status initialization");
     widget_layer_status_init();
-    LOG_INF("EPAPER peripheral_status.c widget_layer_status done.")
+    LOG_INF("EPAPER peripheral_status.c widget_layer_status done.");
 
     return 0;
 }
