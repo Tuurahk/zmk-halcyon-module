@@ -40,8 +40,6 @@ struct peripheral_status_state {
 };
 
 static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_state *state) {
-    LOG_INF("EPAPER peripheral_status.c draw_top: layer=%d, label=%s", state->layer_index,
-            state->layer_label ? state->layer_label : "<none>");
     lv_obj_t *canvas = lv_obj_get_child(widget, 0);
 
     lv_draw_label_dsc_t label_dsc;
@@ -167,8 +165,6 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     LOG_INF("EPAPER peripheral_status.c widget_peripheral_status initialization");
     widget_peripheral_status_init();
     LOG_INF("EPAPER peripheral_status.c widget_peripheral_status done.");
-    LOG_INF("EPAPER peripheral_status.c widget_layer_status initialization");
-    LOG_INF("EPAPER peripheral_status.c widget_layer_status done.");
 
     return 0;
 }
