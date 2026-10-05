@@ -6,6 +6,7 @@
  */
 
 #include <zephyr/kernel.h>
+#include <dt-bindings/zmk/hid_indicators.h>
 #include "util.h"
 
 LV_IMG_DECLARE(bolt);
@@ -36,6 +37,47 @@ void draw_battery(lv_obj_t *canvas, const struct status_state *state) {
         lv_draw_image_dsc_t img_dsc;
         lv_draw_image_dsc_init(&img_dsc);
         canvas_draw_img(canvas, 9, -1, &bolt, &img_dsc);
+    }
+}
+
+void draw_battery_percentage(lv_obj_t *canvas, const struct status_state *state) {
+    lv_draw_label_dsc_t label_dsc;
+    init_label_dsc(&label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_14, LV_TEXT_ALIGN_CENTER);
+
+    char text[5];
+    snprintf(text, sizeof(text), "%u%%", state->battery);
+    canvas_draw_text(canvas, 34, 0, 30, &label_dsc, text);
+}
+
+void draw_lock_indicators(lv_obj_t *canvas, const struct status_state *state) {
+    static const char labels[] = {'N', 'C', 'S'};
+    static const uint8_t masks[] = {
+        HID_INDICATOR_NUM_LOCK,
+        HID_INDICATOR_CAPS_LOCK,
+        HID_INDICATOR_SCROLL_LOCK,
+    };
+    static const lv_coord_t x[] = {0, 31, 62};
+
+    lv_draw_rect_dsc_t foreground_dsc;
+    lv_draw_rect_dsc_t background_dsc;
+    init_rect_dsc(&foreground_dsc, LVGL_FOREGROUND);
+    init_rect_dsc(&background_dsc, LVGL_BACKGROUND);
+
+    lv_draw_label_dsc_t label_dsc;
+    lv_draw_label_dsc_t active_label_dsc;
+    init_label_dsc(&label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_14, LV_TEXT_ALIGN_CENTER);
+    init_label_dsc(&active_label_dsc, LVGL_BACKGROUND, &lv_font_montserrat_14, LV_TEXT_ALIGN_CENTER);
+
+    for (int i = 0; i < 3; ++i) {
+        bool active = (state->hid_indicators & masks[i]) != 0;
+
+        canvas_draw_rect(canvas, x[i], 18, 24, 18, &foreground_dsc);
+        if (!active) {
+            canvas_draw_rect(canvas, x[i] + 2, 20, 20, 14, &background_dsc);
+        }
+
+        char label[2] = {labels[i], '\0'};
+        canvas_draw_text(canvas, x[i], 19, 24, active ? &active_label_dsc : &label_dsc, label);
     }
 }
 
