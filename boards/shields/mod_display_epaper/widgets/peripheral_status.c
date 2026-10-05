@@ -96,7 +96,7 @@ ZMK_SUBSCRIPTION(widget_battery_status, zmk_battery_state_changed);
 static void set_hid_indicators(struct zmk_widget_status *widget,
                                zmk_hid_indicators_t indicators) {
     widget->state.hid_indicators = indicators;
-    draw_top(widget->obj, &widget->state);
+    draw_top(widget->obj, widget->cbuf, &widget->state);
 }
 
 static void hid_indicators_update_cb(zmk_hid_indicators_t indicators) {
