@@ -283,14 +283,18 @@ static void set_layer_status(struct zmk_widget_status *widget, struct layer_stat
 }
 
 static void layer_status_update_cb(struct layer_status_state state) {
+    LOG_INF("EPAPER central layer event: index=%d, label=%s", state.index,
+            state.label ? state.label : "<none>");
     struct zmk_widget_status *widget;
     SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) { set_layer_status(widget, state); }
 }
 
 static struct layer_status_state layer_status_get_state(const zmk_event_t *eh) {
     zmk_keymap_layer_index_t index = zmk_keymap_highest_layer_active();
-    return (struct layer_status_state){
-        .index = index, .label = zmk_keymap_layer_name(zmk_keymap_layer_index_to_id(index))};
+    const char *label = zmk_keymap_layer_name(zmk_keymap_layer_index_to_id(index));
+    LOG_INF("EPAPER central layer initial state: index=%d, label=%s", index,
+            label ? label : "<none>");
+    return (struct layer_status_state){.index = index, .label = label};
 }
 
 ZMK_DISPLAY_WIDGET_LISTENER(widget_layer_status, struct layer_status_state, layer_status_update_cb,
