@@ -220,6 +220,7 @@ static void set_hid_indicators(struct zmk_widget_status *widget,
 }
 
 static void hid_indicators_update_cb(zmk_hid_indicators_t indicators) {
+    LOG_INF("EPAPER central HID indicator event: 0x%x", indicators);
     struct zmk_widget_status *widget;
     SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) {
         set_hid_indicators(widget, indicators);
@@ -228,7 +229,10 @@ static void hid_indicators_update_cb(zmk_hid_indicators_t indicators) {
 
 static zmk_hid_indicators_t hid_indicators_get_state(const zmk_event_t *eh) {
     const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
-    return (ev != NULL) ? ev->indicators : zmk_hid_indicators_get_current_profile();
+    zmk_hid_indicators_t indicators = (ev != NULL) ? ev->indicators : zmk_hid_indicators_get_current_profile();
+    LOG_INF("EPAPER central HID indicator initial/event state: 0x%x (event=%s)",
+            indicators, ev != NULL ? "yes" : "no");
+    return indicators;
 }
 
 ZMK_DISPLAY_WIDGET_LISTENER(widget_hid_indicators, zmk_hid_indicators_t,
