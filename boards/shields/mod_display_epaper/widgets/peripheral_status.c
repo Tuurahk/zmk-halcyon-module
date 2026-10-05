@@ -25,6 +25,14 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include "peripheral_status.h"
 
+// #if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
+// LV_IMG_DECLARE(Forest);
+// #elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN)
+// LV_IMG_DECLARE(Mountain);
+// #elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
+// LV_IMG_DECLARE(Cityscape);
+// #endif
+
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
 struct peripheral_status_state {
