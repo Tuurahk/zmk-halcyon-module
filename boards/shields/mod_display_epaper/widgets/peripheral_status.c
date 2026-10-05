@@ -25,14 +25,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include "peripheral_status.h"
 
-#if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
-LV_IMG_DECLARE(Forest);
-#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN)
-LV_IMG_DECLARE(Mountain);
-#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
-LV_IMG_DECLARE(Cityscape);
-#endif
-
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
 struct peripheral_status_state {
@@ -146,18 +138,6 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_t *top = lv_canvas_create(widget->obj);
     lv_obj_align(top, LV_ALIGN_TOP_LEFT, 0, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
-
-    lv_obj_t *art = lv_img_create(widget->obj);
-
-#if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
-    lv_image_set_src(art, &Forest);
-#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN)
-    lv_image_set_src(art, &Mountain);
-#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
-    lv_image_set_src(art, &Cityscape);
-#endif
-
-    lv_obj_align(art, LV_ALIGN_TOP_LEFT, 20, 0);
 
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();
