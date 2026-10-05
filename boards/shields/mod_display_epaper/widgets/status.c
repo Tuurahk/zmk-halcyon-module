@@ -318,6 +318,7 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
 
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();
+    widget_hid_indicators_init();
     widget_output_status_init();
     widget_layer_status_init();
 
