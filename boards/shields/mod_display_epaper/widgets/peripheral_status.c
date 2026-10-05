@@ -22,6 +22,8 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/ble.h>
 #include <zmk/hid_indicators.h>
 #include <zmk/events/hid_indicators_changed.h>
+#include <zmk/events/layer_state_changed.h>
+#include <zmk/keymap.h>
 
 #include "peripheral_status.h"
 
@@ -54,6 +56,23 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     draw_battery(canvas, state);
     draw_battery_percentage(canvas, state);
     draw_lock_indicators(canvas, state);
+
+    // Draw current layer
+    static const char *const layer_labels[] = {
+        "QWE", "NAV", "SYM", "FUN", "ADJ", "GA1", "GA2",
+    };
+    lv_draw_label_dsc_t layer_label_dsc;
+    init_label_dsc(&layer_label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_14,
+                   LV_TEXT_ALIGN_CENTER);
+
+    const char *layer_label = NULL;
+    if (state->layer_index < ARRAY_SIZE(layer_labels)) {
+        layer_label = layer_labels[state->layer_index];
+    }
+
+    if (layer_label != NULL) {
+        canvas_draw_text(canvas, 0, 42, 86, &layer_label_dsc, layer_label);
+    }
 
     // Draw output status
     canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &label_dsc,
@@ -119,7 +138,6 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_hid_indicators, zmk_hid_indicators_t,
                             hid_indicators_update_cb, hid_indicators_get_state)
 ZMK_SUBSCRIPTION(widget_hid_indicators, zmk_hid_indicators_changed);
 
-
 #if IS_ENABLED(CONFIG_USB_DEVICE_STACK)
 ZMK_SUBSCRIPTION(widget_battery_status, zmk_usb_conn_state_changed);
 #endif /* IS_ENABLED(CONFIG_USB_DEVICE_STACK) */
@@ -144,6 +162,36 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_peripheral_status, struct peripheral_status_s
                             output_status_update_cb, get_state)
 ZMK_SUBSCRIPTION(widget_peripheral_status, zmk_split_peripheral_status_changed);
 
+struct layer_status_state {
+    zmk_keymap_layer_index_t index;
+    const char *label;
+};
+
+static void set_layer_status(struct zmk_widget_status *widget, struct layer_status_state state) {
+    widget->state.layer_index = state.index;
+    widget->state.layer_label = state.label;
+
+    draw_top(widget->obj, widget->cbuf, &widget->state);
+}
+
+static void layer_status_update_cb(struct layer_status_state state) {
+    struct zmk_widget_status *widget;
+    SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) { set_layer_status(widget, state); }
+}
+
+static struct layer_status_state layer_status_get_state(const zmk_event_t *eh) {
+    zmk_keymap_layer_index_t index = zmk_keymap_highest_layer_active();
+    return (struct layer_status_state){
+        .index = index,
+        .label = zmk_keymap_layer_name(zmk_keymap_layer_index_to_id(index)),
+    };
+}
+
+ZMK_DISPLAY_WIDGET_LISTENER(widget_layer_status, struct layer_status_state, layer_status_update_cb,
+                            layer_status_get_state)
+
+ZMK_SUBSCRIPTION(widget_layer_status, zmk_layer_state_changed);
+
 int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 184, 88);
@@ -155,6 +203,7 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     widget_battery_status_init();
     widget_hid_indicators_init();
     widget_peripheral_status_init();
+    widget_layer_status_init();
 
     return 0;
 }
