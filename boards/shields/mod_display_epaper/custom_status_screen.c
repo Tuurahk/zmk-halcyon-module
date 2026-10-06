@@ -15,11 +15,13 @@ static struct zmk_widget_status status_widget;
 #endif
 
 lv_obj_t *zmk_display_status_screen() {
+    LOG_INF("EPAPER custom_status_screen.c: zmk_display_status_screen()");
 
     lv_obj_t *screen;
     screen = lv_obj_create(NULL);
 
 #if IS_ENABLED(CONFIG_HALCYON_EPAPER_WIDGET_STATUS)
+    LOG_INF("EPAPER custom_status_screen.c: calling zmk_widget_status_init()");
     zmk_widget_status_init(&status_widget, screen);
     lv_obj_align(zmk_widget_status_obj(&status_widget), LV_ALIGN_TOP_LEFT, 0, 0);
 #endif
