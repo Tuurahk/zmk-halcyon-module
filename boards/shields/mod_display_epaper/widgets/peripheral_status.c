@@ -25,6 +25,19 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include "peripheral_status.h"
 
+static int epaper_hid_indicator_trace_listener(const zmk_event_t *eh) {
+    const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
+    if (ev != NULL) {
+        LOG_INF("EPAPER peripheral HID EVENT: 0x%x", ev->indicators);
+    } else {
+        LOG_INF("EPAPER peripheral HID EVENT: invalid event");
+    }
+    return 0;
+}
+
+ZMK_LISTENER(epaper_hid_indicator_trace, epaper_hid_indicator_trace_listener);
+ZMK_SUBSCRIPTION(epaper_hid_indicator_trace, zmk_hid_indicators_changed);
+
 // #if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
 // LV_IMG_DECLARE(Forest);
 // #elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN)
