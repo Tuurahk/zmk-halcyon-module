@@ -65,7 +65,7 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
 
 static void set_battery_status(struct zmk_widget_status *widget,
                                struct battery_status_state state) {
-    LOG_INF("EPAPER status.c set_battery_status: level=%d", state.level);
+    LOG_INF("EPAPER peripheral_status.c set_battery_status: level=%d", state.level);
 #if IS_ENABLED(CONFIG_USB_DEVICE_STACK)
     widget->state.charging = state.usb_present;
 #endif /* IS_ENABLED(CONFIG_USB_DEVICE_STACK) */
@@ -96,13 +96,13 @@ ZMK_SUBSCRIPTION(widget_battery_status, zmk_battery_state_changed);
 
 static void set_hid_indicators(struct zmk_widget_status *widget,
                                zmk_hid_indicators_t indicators) {
-    LOG_INF("EPAPER status.c set_hid_indicators: indicators=0x%x", indicators);
+    LOG_INF("EPAPER peripheral_status.c set_hid_indicators: indicators=0x%x", indicators);
     widget->state.hid_indicators = indicators;
     draw_top(widget->obj, widget->cbuf, &widget->state);
 }
 
 static void hid_indicators_update_cb(zmk_hid_indicators_t indicators) {
-    LOG_INF("EPAPER peripheral HID indicator event: 0x%x", indicators);
+    LOG_INF("EPAPER peripheral_status.c HID indicator event: 0x%x", indicators);
     struct zmk_widget_status *widget;
     SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) {
         set_hid_indicators(widget, indicators);
@@ -112,7 +112,7 @@ static void hid_indicators_update_cb(zmk_hid_indicators_t indicators) {
 static zmk_hid_indicators_t hid_indicators_get_state(const zmk_event_t *eh) {
     const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
     zmk_hid_indicators_t indicators = (ev != NULL) ? ev->indicators : 0;
-    LOG_INF("EPAPER peripheral HID indicator initial/event state: 0x%x (event=%s)",
+    LOG_INF("EPAPER peripheral_status.c HID indicator initial/event state: 0x%x (event=%s)",
             indicators, ev != NULL ? "yes" : "no");
     return indicators;
 }
@@ -146,7 +146,7 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_peripheral_status, struct peripheral_status_s
 ZMK_SUBSCRIPTION(widget_peripheral_status, zmk_split_peripheral_status_changed);
 
 int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
-    LOG_INF("EPAPER *** PERIPHERAL STATUS INIT TEST ***");
+    LOG_INF("EPAPER peripheral_status.c widget initialization");
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 184, 88);
     lv_obj_t *top = lv_canvas_create(widget->obj);
