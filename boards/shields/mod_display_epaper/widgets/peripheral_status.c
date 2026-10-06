@@ -25,6 +25,14 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include "peripheral_status.h"
 
+// #if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
+// LV_IMG_DECLARE(Forest);
+// #elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN)
+// LV_IMG_DECLARE(Mountain);
+// #elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
+// LV_IMG_DECLARE(Cityscape);
+// #endif
+
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
 struct peripheral_status_state {
@@ -39,15 +47,19 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     lv_draw_rect_dsc_t rect_black_dsc;
     init_rect_dsc(&rect_black_dsc, LVGL_BACKGROUND);
 
+    // Fill background
     canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
 
+    // Draw battery and percentage
     draw_battery(canvas, state);
     draw_battery_percentage(canvas, state);
     draw_lock_indicators(canvas, state);
 
+    // Draw output status
     canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &label_dsc,
                      state->connected ? LV_SYMBOL_WIFI : LV_SYMBOL_CLOSE);
 
+    // Rotate canvas
     rotate_canvas(canvas);
 }
 
@@ -135,7 +147,6 @@ ZMK_SUBSCRIPTION(widget_peripheral_status, zmk_split_peripheral_status_changed);
 
 int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     LOG_INF("EPAPER *** PERIPHERAL STATUS INIT TEST ***");
-
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 184, 88);
     lv_obj_t *top = lv_canvas_create(widget->obj);
@@ -148,7 +159,6 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     LOG_INF("EPAPER peripheral_status.c widget_battery_status done.");
     LOG_INF("EPAPER peripheral_status.c widget_hid_indicators initialization");
     widget_hid_indicators_init();
-    LOG_INF("EPAPER *** HID INIT CALL RETURNED ***");
     LOG_INF("EPAPER peripheral_status.c widget_hid_indicators done.");
     LOG_INF("EPAPER peripheral_status.c widget_peripheral_status initialization");
     widget_peripheral_status_init();
