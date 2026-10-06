@@ -38,13 +38,13 @@ static int epaper_hid_indicator_trace_listener(const zmk_event_t *eh) {
 ZMK_LISTENER(epaper_hid_indicator_trace, epaper_hid_indicator_trace_listener);
 ZMK_SUBSCRIPTION(epaper_hid_indicator_trace, zmk_hid_indicators_changed);
 
-// #if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
-// LV_IMG_DECLARE(Forest);
-// #elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN)
-// LV_IMG_DECLARE(Mountain);
-// #elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
-// LV_IMG_DECLARE(Cityscape);
-// #endif
+#if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
+LV_IMG_DECLARE(Forest);
+#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN)
+LV_IMG_DECLARE(Mountain);
+#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
+LV_IMG_DECLARE(Cityscape);
+#endif
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
 
@@ -165,6 +165,24 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_t *top = lv_canvas_create(widget->obj);
     lv_obj_align(top, LV_ALIGN_TOP_LEFT, 0, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
+
+    /*
+     * Keep the original 164x88 artwork unchanged, but constrain the image
+     * widget to the bottom half of the 184x88 display area.  The negative
+     * offset shows the lower half of the source image without modifying it.
+     */
+    lv_obj_t *art = lv_image_create(widget->obj);
+    lv_obj_set_size(art, 164, 44);
+    lv_obj_align(art, LV_ALIGN_TOP_LEFT, 20, 44);
+    lv_image_set_inner_align(art, LV_IMAGE_ALIGN_TOP_LEFT);
+    lv_image_set_offset_y(art, -44);
+#if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
+    lv_image_set_src(art, &Forest);
+#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN)
+    lv_image_set_src(art, &Mountain);
+#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
+    lv_image_set_src(art, &Cityscape);
+#endif
 
     sys_slist_append(&widgets, &widget->node);
     LOG_INF("EPAPER peripheral_status.c widget_battery_status initialization");
