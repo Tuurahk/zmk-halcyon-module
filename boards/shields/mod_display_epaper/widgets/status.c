@@ -199,7 +199,7 @@ static void set_hid_indicators(struct zmk_widget_status *widget,
 }
 
 static void hid_indicators_update_cb(zmk_hid_indicators_t indicators) {
-    LOG_INF("EPAPER central HID indicator event: 0x%x", indicators);
+    LOG_INF("EPAPER status.c HID indicator event: 0x%x", indicators);
     struct zmk_widget_status *widget;
     SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) {
         set_hid_indicators(widget, indicators);
@@ -209,7 +209,7 @@ static void hid_indicators_update_cb(zmk_hid_indicators_t indicators) {
 static zmk_hid_indicators_t hid_indicators_get_state(const zmk_event_t *eh) {
     const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
     zmk_hid_indicators_t indicators = (ev != NULL) ? ev->indicators : zmk_hid_indicators_get_current_profile();
-    LOG_INF("EPAPER central HID indicator initial/event state: 0x%x (event=%s)",
+    LOG_INF("EPAPER status.c HID indicator initial/event state: 0x%x (event=%s)",
             indicators, ev != NULL ? "yes" : "no");
     return indicators;
 }
@@ -283,9 +283,15 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_align(middle, LV_ALIGN_TOP_LEFT, 24, 0);
     lv_canvas_set_buffer(middle, widget->cbuf2, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
     sys_slist_append(&widgets, &widget->node);
+    LOG_INF("EPAPER status.c widget_battery_status initialization");
     widget_battery_status_init();
+    LOG_INF("EPAPER status.c widget_battery_status done.");
+    LOG_INF("EPAPER status.c widget_hid_indicators initialization");
     widget_hid_indicators_init();
+    LOG_INF("EPAPER status.c widget_hid_indicators done.");
+    LOG_INF("EPAPER status.c widget_output_status initialization");
     widget_output_status_init();
+    LOG_INF("EPAPER status.c widget_output_status done.");
 
     return 0;
 }
