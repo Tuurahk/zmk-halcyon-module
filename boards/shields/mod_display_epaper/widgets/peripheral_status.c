@@ -111,7 +111,7 @@ static void hid_indicators_update_cb(zmk_hid_indicators_t indicators) {
 
 static zmk_hid_indicators_t hid_indicators_get_state(const zmk_event_t *eh) {
     const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
-    zmk_hid_indicators_t indicators = (ev != NULL) ? ev->indicators : 0;
+    zmk_hid_indicators_t indicators = (ev != NULL) ? ev->indicators : zmk_hid_indicators_get_current_profile();
     LOG_INF("EPAPER peripheral_status.c HID indicator initial/event state: 0x%x (event=%s)",
             indicators, ev != NULL ? "yes" : "no");
     return indicators;
