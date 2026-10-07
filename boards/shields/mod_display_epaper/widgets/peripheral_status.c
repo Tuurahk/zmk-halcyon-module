@@ -166,7 +166,26 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_align(top, LV_ALIGN_TOP_LEFT, 0, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
 
-    /* Keep the top half clear for widgets; artwork is not rendered here. */
+    /*
+     * Keep the top 44 px clear for widgets while showing the original
+     * artwork in the lower 44 px. The artwork itself is unchanged; the
+     * container clips it to the lower half.
+     */
+    lv_obj_t *art_area = lv_obj_create(widget->obj);
+    lv_obj_set_size(art_area, 164, 44);
+    lv_obj_align(art_area, LV_ALIGN_TOP_LEFT, 20, 44);
+    lv_obj_set_style_bg_opa(art_area, LV_OPA_TRANSP, 0);
+    lv_obj_set_style_border_width(art_area, 0, 0);
+
+    lv_obj_t *art = lv_img_create(art_area);
+#if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
+    lv_image_set_src(art, &Forest);
+#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN)
+    lv_image_set_src(art, &Mountain);
+#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
+    lv_image_set_src(art, &Cityscape);
+#endif
+    lv_obj_align(art, LV_ALIGN_TOP_LEFT, 0, -44);
 
     sys_slist_append(&widgets, &widget->node);
     LOG_INF("EPAPER peripheral_status.c widget_battery_status initialization");
