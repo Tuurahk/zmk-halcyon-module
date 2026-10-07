@@ -50,6 +50,7 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
 
     // Draw battery
     draw_battery(canvas, state);
+    draw_battery_percentage(canvas, state);
 
     // Draw output status
     canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &label_dsc,
