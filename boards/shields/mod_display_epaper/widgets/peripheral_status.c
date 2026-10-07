@@ -166,23 +166,7 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_align(top, LV_ALIGN_TOP_LEFT, 0, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
 
-    /*
-     * Keep the original 164x88 artwork unchanged, but constrain the image
-     * widget to the bottom half of the 184x88 display area.  The negative
-     * offset shows the lower half of the source image without modifying it.
-     */
-    lv_obj_t *art = lv_image_create(widget->obj);
-    lv_obj_set_size(art, 164, 44);
-    lv_obj_align(art, LV_ALIGN_TOP_LEFT, 20, 44);
-    lv_image_set_inner_align(art, LV_IMAGE_ALIGN_TOP_LEFT);
-    lv_image_set_offset_y(art, -44);
-#if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
-    lv_image_set_src(art, &Forest);
-#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_MOUNTAIN)
-    lv_image_set_src(art, &Mountain);
-#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
-    lv_image_set_src(art, &Cityscape);
-#endif
+    /* Keep the top half clear for widgets; artwork is not rendered here. */
 
     sys_slist_append(&widgets, &widget->node);
     LOG_INF("EPAPER peripheral_status.c widget_battery_status initialization");
