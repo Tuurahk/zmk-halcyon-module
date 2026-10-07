@@ -120,6 +120,7 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_align(top, LV_ALIGN_TOP_LEFT, 0, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
 
+#if !IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_NONE)
     lv_obj_t *art = lv_img_create(widget->obj);
 
 #if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
@@ -131,6 +132,7 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
 #endif
 
     lv_obj_align(art, LV_ALIGN_TOP_LEFT, 20, 0);
+#endif
 
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();
