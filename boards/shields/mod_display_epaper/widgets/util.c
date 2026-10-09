@@ -44,7 +44,7 @@ void draw_battery_percentage(lv_obj_t *canvas, const struct status_state *state)
     init_label_dsc(&label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_14, LV_TEXT_ALIGN_CENTER);
 
     char text[5];
-    snprintf(text, sizeof(text), "%u%%", state->battery);
+    snprintf(text, sizeof(text), "%u", state->battery);
     canvas_draw_text(canvas, 34, 0, 30, &label_dsc, text);
 }
 
