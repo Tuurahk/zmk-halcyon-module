@@ -8,7 +8,7 @@
 #include <lvgl.h>
 #include <zmk/endpoints.h>
 
-#define CONFIG_HALCYON_EPAPER_WIDGET_INVERTED 1
+#define CONFIG_HALCYON_EPAPER_WIDGET_INVERTED 0
 
 #define NICEVIEW_PROFILE_COUNT 5
 
