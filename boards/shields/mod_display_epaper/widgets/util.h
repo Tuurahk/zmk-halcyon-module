@@ -8,6 +8,8 @@
 #include <lvgl.h>
 #include <zmk/endpoints.h>
 
+#define CONFIG_HALCYON_EPAPER_WIDGET_INVERTED 1
+
 #define NICEVIEW_PROFILE_COUNT 5
 
 #define CANVAS_SIZE 88
