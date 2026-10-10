@@ -60,6 +60,13 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     rotate_canvas(canvas);
 }
 
+static void draw_bottom(lv_obj_t *widget, lv_color_t cbuf[], const struct status_state *state) {
+    lv_obj_t *canvas = lv_obj_get_child(widget, 1);
+
+    // Fill background
+    canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
+}
+
 static void set_battery_status(struct zmk_widget_status *widget,
                                struct battery_status_state state) {
 #if IS_ENABLED(CONFIG_USB_DEVICE_STACK)
@@ -69,6 +76,7 @@ static void set_battery_status(struct zmk_widget_status *widget,
     widget->state.battery = state.level;
 
     draw_top(widget->obj, widget->cbuf, &widget->state);
+    draw_bottom(widget->obj, widget->cbuf, &widget->state);
 }
 
 static void battery_status_update_cb(struct battery_status_state state) {
@@ -102,6 +110,7 @@ static void set_connection_status(struct zmk_widget_status *widget,
     widget->state.connected = state.connected;
 
     draw_top(widget->obj, widget->cbuf, &widget->state);
+    draw_bottom(widget->obj, widget->cbuf, &widget->state);
 }
 
 static void output_status_update_cb(struct peripheral_status_state state) {
@@ -114,11 +123,17 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_peripheral_status, struct peripheral_status_s
 ZMK_SUBSCRIPTION(widget_peripheral_status, zmk_split_peripheral_status_changed);
 
 int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
+
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 184, 88);
+
     lv_obj_t *top = lv_canvas_create(widget->obj);
     lv_obj_align(top, LV_ALIGN_TOP_LEFT, 0, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
+
+    lv_obj_t *bottom = lv_canvas_create(widget->obj);
+    lv_obj_align(bottom, LV_ALIGN_TOP_LEFT, 44, 0);
+    lv_canvas_set_buffer(bottom, widget->cbuf2, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
 
 #if !IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_NONE)
     lv_obj_t *art = lv_img_create(widget->obj);
