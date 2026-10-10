@@ -46,7 +46,11 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     lv_draw_rect_dsc_t rect_black_dsc;
     init_rect_dsc(&rect_black_dsc, LVGL_BACKGROUND);
 
-    // Fill background
+    // Fill the full widget background.
+    canvas_draw_rect(background_canvas, 0, 0, PERIPHERAL_CANVAS_WIDTH,
+                     PERIPHERAL_CANVAS_HEIGHT, &rect_black_dsc);
+
+    // Clear the square indicator canvas before redrawing.
     canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
 
     // Draw battery
@@ -117,9 +121,16 @@ ZMK_SUBSCRIPTION(widget_peripheral_status, zmk_split_peripheral_status_changed);
 int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 184, 88);
+    // Full-size background canvas spanning the 184 x 88 widget.
+    lv_obj_t *background = lv_canvas_create(widget->obj);
+    lv_obj_align(background, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_canvas_set_buffer(background, widget->cbuf, PERIPHERAL_CANVAS_WIDTH,
+                         PERIPHERAL_CANVAS_HEIGHT, CANVAS_COLOR_FORMAT);
+
+    // Square canvas for the indicators; rotate_canvas() assumes 88 x 88.
     lv_obj_t *top = lv_canvas_create(widget->obj);
     lv_obj_align(top, LV_ALIGN_TOP_LEFT, 0, 0);
-    lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
+    lv_canvas_set_buffer(top, widget->cbuf2, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
 
 #if !IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_NONE)
     lv_obj_t *art = lv_img_create(widget->obj);
