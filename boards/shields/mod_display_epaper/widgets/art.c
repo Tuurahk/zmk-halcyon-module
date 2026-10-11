@@ -487,6 +487,10 @@ const lv_image_dsc_t Cityscape = {
     .reserved = NULL,
 };
 
+#ifndef LV_ATTRIBUTE_CHILL
+#define LV_ATTRIBUTE_CHILL
+#endif
+
 const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_CHILL uint8_t Chill_map[] = {
 
 #if CONFIG_HALCYON_EPAPER_WIDGET_INVERTED
