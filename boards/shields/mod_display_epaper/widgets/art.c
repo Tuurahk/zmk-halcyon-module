@@ -491,7 +491,7 @@ const lv_image_dsc_t Cityscape = {
 #define LV_ATTRIBUTE_CHILL
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_CHILL uint8_t Chill_map[] = {
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_CHILL uint8_t Chill_map[] = {
 
 #if CONFIG_HALCYON_EPAPER_WIDGET_INVERTED
         0xff, 0xff, 0xff, 0xff, // white
