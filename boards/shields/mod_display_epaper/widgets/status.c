@@ -30,6 +30,8 @@ LV_IMG_DECLARE(Forest);
 LV_IMG_DECLARE(Mountain);
 #elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
 LV_IMG_DECLARE(Cityscape);
+#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CHILL)
+LV_IMG_DECLARE(Chill);
 #endif
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
@@ -297,6 +299,8 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_image_set_src(art, &Mountain);
 #elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CITYSCAPE)
     lv_image_set_src(art, &Cityscape);
+#elif IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_CHILL)
+    lv_image_set_src(art, &Chill);
 #endif
 
     lv_obj_align(art, LV_ALIGN_TOP_LEFT, 74, 0);
