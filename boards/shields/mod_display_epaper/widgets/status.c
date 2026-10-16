@@ -23,6 +23,11 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/ble.h>
 #include <zmk/endpoints.h>
 #include <zmk/keymap.h>
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+#include <zmk/hid_indicators.h>
+#include <zmk/hid_indicators_types.h>
+#include <zmk/events/hid_indicators_changed.h>
+#endif
 
 #if IS_ENABLED(CONFIG_SHIELD_MOD_DISPLAY_EPAPER_FOREST)
 LV_IMG_DECLARE(Forest);
@@ -49,6 +54,16 @@ struct layer_status_state {
     zmk_keymap_layer_index_t index;
     const char *label;
 };
+
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+#define ZMK_LED_NUMLOCK_BIT BIT(0)
+#define ZMK_LED_CAPSLOCK_BIT BIT(1)
+#define ZMK_LED_SCROLLLOCK_BIT BIT(2)
+
+struct hid_indicator_status_state {
+    zmk_hid_indicators_t flags;
+};
+#endif
 
 static void draw_top(lv_obj_t *widget, const struct status_state *state) {
     lv_obj_t *canvas = lv_obj_get_child(widget, 0);
@@ -158,6 +173,28 @@ static void draw_bottom(lv_obj_t *widget, const struct status_state *state) {
 
     // Fill background
     lv_canvas_fill_bg(canvas, LVGL_BACKGROUND, LV_OPA_COVER);
+
+    // Draw HID lock indicators
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+    const char *indicator_labels[] = {"C", "N", "S"};
+    const uint8_t indicator_bits[] = {ZMK_LED_CAPSLOCK_BIT, ZMK_LED_NUMLOCK_BIT,
+                                      ZMK_LED_SCROLLLOCK_BIT};
+    for (int i = 0; i < ARRAY_SIZE(indicator_labels); ++i) {
+        const lv_coord_t x = 8 + i * 24;
+        const bool active = (state->hid_indicators & indicator_bits[i]) != 0;
+
+        lv_draw_rect_dsc_t indicator_rect_dsc;
+        init_rect_dsc(&indicator_rect_dsc, active ? LVGL_FOREGROUND : LVGL_BACKGROUND);
+        indicator_rect_dsc.border_color = LVGL_FOREGROUND;
+        indicator_rect_dsc.border_width = 1;
+        canvas_draw_rect(canvas, x, 20, 18, 18, &indicator_rect_dsc);
+
+        lv_draw_label_dsc_t indicator_label_dsc;
+        init_label_dsc(&indicator_label_dsc, active ? LVGL_BACKGROUND : LVGL_FOREGROUND,
+                       &lv_font_montserrat_14, LV_TEXT_ALIGN_CENTER);
+        canvas_draw_text(canvas, x, 20, 18, &indicator_label_dsc, indicator_labels[i]);
+    }
+#endif
 
     // Draw layer
     if (state->layer_label == NULL || strlen(state->layer_label) == 0) {
@@ -278,6 +315,27 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_layer_status, struct layer_status_state, laye
 
 ZMK_SUBSCRIPTION(widget_layer_status, zmk_layer_state_changed);
 
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+static void hid_indicator_status_update_cb(struct hid_indicator_status_state state) {
+    struct zmk_widget_status *widget;
+    SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) {
+        widget->state.hid_indicators = state.flags;
+        draw_bottom(widget->obj, &widget->state);
+    }
+}
+
+static struct hid_indicator_status_state
+hid_indicator_status_get_state(const zmk_event_t *eh) {
+    return (struct hid_indicator_status_state){
+        .flags = zmk_hid_indicators_get_current_profile(),
+    };
+}
+
+ZMK_DISPLAY_WIDGET_LISTENER(widget_hid_indicator_status, struct hid_indicator_status_state,
+                            hid_indicator_status_update_cb, hid_indicator_status_get_state)
+ZMK_SUBSCRIPTION(widget_hid_indicator_status, zmk_hid_indicators_changed);
+#endif
+
 int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 184, 88);
@@ -309,6 +367,9 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     widget_battery_status_init();
     widget_output_status_init();
     widget_layer_status_init();
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+    widget_hid_indicator_status_init();
+#endif
 
     return 0;
 }
